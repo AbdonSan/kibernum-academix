@@ -16,6 +16,7 @@ const LoginStaff = () => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
+  {/*
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -37,6 +38,64 @@ const LoginStaff = () => {
       setLoading(false);
     }, 1000);
   };
+  */}
+  const handleLogin = async (e: React.FormEvent) => {
+  e.preventDefault();
+
+  if (!usuario || !password) {
+    toast.error("Por favor completa todos los campos");
+    return;
+  }
+
+  setLoading(true);
+  //console.log("🟡 Intentando login con:", usuario, password);
+
+  try {
+    const response = await fetch("http://localhost:8080/api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ correo: usuario, password }),
+    });
+
+    const data = await response.json();
+    //console.log("🟢 Respuesta del backend:", data);
+
+    if (response.ok) {
+      // Guardar el token y los datos del usuario
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
+      //console.log("✅ Token y usuario guardados en localStorage");
+
+      toast.success(`¡Bienvenido, ${data.user.nombre}!`);
+      
+      const roleMap = {
+        1: "admin",
+        2: "staff",
+        3: "alumno",
+      };
+
+      const rol = roleMap[data.user.rol] || "alumno";
+
+      // Redirección según el rol
+      //console.log("🧭 Navegando según rol:", data.user.rol);
+
+      if (data.user.rol === 1) navigate("/dashboard-staff");
+      else if (data.user.rol === 2) navigate("/dashboard-staff");
+      else navigate("/dashboard-alumno");
+      
+    } else {
+      toast.error(data.message || "Credenciales incorrectas");
+      //console.error("❌ Error de autenticación:", data);
+    }
+  } catch (error) {
+    //console.error("Error al iniciar sesión:", error);
+    toast.error("Error de conexión con el servidor");
+  } finally {
+    setLoading(false);
+  }
+};
+
+
 
   return (
     <div className="flex min-h-screen flex-col">

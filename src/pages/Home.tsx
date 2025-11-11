@@ -19,7 +19,7 @@ import {
 const Home = () => {
   return (
     <div className="flex min-h-screen flex-col">
-      <Header />
+      {/*<Header />*/}
 
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-br from-primary via-primary/90 to-secondary py-20 md:py-32">
@@ -38,7 +38,7 @@ const Home = () => {
             <p className="mb-8 max-w-2xl text-lg text-white/90 md:text-xl">
               Consulta tus asistencias y notas, o administra la información de los alumnos de forma segura y eficiente
             </p>
-            
+            {/*
             <div className="flex flex-col gap-4 sm:flex-row">
               <Button variant="hero" size="xl" className="bg-white text-primary hover:bg-white/90" asChild>
                 <Link to="/login-alumno">
@@ -53,6 +53,7 @@ const Home = () => {
                 </Link>
               </Button>
             </div>
+            */}
           </div>
         </div>
       </section>
@@ -336,7 +337,8 @@ const Home = () => {
                 Contactar Soporte
               </a>
             </Button>
-            <Button variant="outline" size="xl" className="border-2 border-white text-white hover:bg-white hover:text-primary" asChild>
+            {/*<Button variant="hero" size="xl" className="border-2 border-white text-white hover:bg-white hover:text-primary" asChild>*/}
+            <Button variant="hero" size="xl" className="bg-white text-primary hover:bg-white/90" asChild>
               <a href="https://wa.me/56912345678" target="_blank" rel="noopener noreferrer">
                 WhatsApp
               </a>

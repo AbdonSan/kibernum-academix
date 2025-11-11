@@ -68,7 +68,8 @@ const Footer = () => {
                   soporte@kibernumitacademy.com
                 </a>
               </li>
-              <li>
+
+              {/*<li>
                 <a
                   href="tel:+56912345678"
                   className="flex items-center gap-2 text-muted-foreground transition-colors hover:text-primary"
@@ -76,7 +77,8 @@ const Footer = () => {
                   <Phone className="h-4 w-4" />
                   +569 1234 5678
                 </a>
-              </li>
+              </li>*/}
+
             </ul>
           </div>
 

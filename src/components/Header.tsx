@@ -1,8 +1,10 @@
-import { Link, useLocation } from "react-router-dom";
+import { NavLink } from "@/components/NavLink";
+import { Link, useHref, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { GraduationCap, LogIn, Menu, X } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import { HeadRow } from "react-day-picker";
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -12,9 +14,10 @@ const Header = () => {
 
   const navigation = [
     { name: "Inicio", href: "/" },
+    { name: "Cursos", href: "/cursos" },
     { name: "Portal Alumno", href: "/login-alumno" },
-    { name: "Portal Staff", href: "/login-staff" },
-    { name: "Soporte", href: "#soporte" },
+    //{ name: "Portal Staff", href: "/login-staff" },
+    { name: "Acerca", href: "/acerca" },
   ];
 
   return (
@@ -33,31 +36,32 @@ const Header = () => {
 
         {/* Desktop Navigation */}
         <div className="hidden items-center gap-6 md:flex">
+                    
           {navigation.map((item) => (
-            <Link
+            <NavLink
               key={item.name}
               to={item.href}
-              className={cn(
-                "text-sm font-medium transition-colors hover:text-primary",
-                isActive(item.href) ? "text-primary" : "text-muted-foreground"
-              )}
+              className="text-sm font-medium transition-colors hover:text-primary"
+              activeClassName="text-primary border-b-2 border-primary"
+              pendingClassName="opacity-60"
             >
               {item.name}
-            </Link>
+            </NavLink>
           ))}
+
         </div>
 
         {/* Desktop CTA */}
         <div className="hidden items-center gap-3 md:flex">
           <Button variant="hero" size="default" asChild>
-            <Link to="/login-alumno">
+            <Link to="/login-staff">
               <LogIn className="mr-2 h-4 w-4" />
-              Entrar al Portal
+              Portal Admin
             </Link>
           </Button>
         </div>
 
-        {/* Mobile menu button */}
+        {/* Mobile menu button 
         <button
           type="button"
           className="inline-flex items-center justify-center rounded-md p-2 text-muted-foreground hover:bg-accent hover:text-accent-foreground md:hidden"
@@ -65,10 +69,10 @@ const Header = () => {
         >
           <span className="sr-only">Abrir menú</span>
           {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-        </button>
+        </button>*/}
       </nav>
 
-      {/* Mobile menu */}
+      {/* Mobile menu 
       {mobileMenuOpen && (
         <div className="border-t border-border bg-background md:hidden">
           <div className="space-y-1 px-4 pb-3 pt-2">
@@ -97,7 +101,7 @@ const Header = () => {
             </div>
           </div>
         </div>
-      )}
+      )}*/}
     </header>
   );
 };
