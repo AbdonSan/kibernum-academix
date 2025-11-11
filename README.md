@@ -1,73 +1,241 @@
-# Welcome to your Lovable project
+````markdown
+# 🎓 Frontend – Kibernum Academix
 
-## Project info
+Interfaz web del **Portal Académico** desarrollada con **React + TypeScript + Vite**, conectada al backend Node.js del proyecto **Portal Académico**.  
+Permite la gestión visual y segura de alumnos, asistencias y calificaciones, según el rol del usuario.
 
-**URL**: https://lovable.dev/projects/f79367b0-981b-4f8d-a1b0-ab2545e89fb4
+---
 
-## How can I edit this code?
+## 🧩 Tecnologías principales
 
-There are several ways of editing your application.
+| Área | Stack |
+|------|--------|
+| Framework | React + Vite + TypeScript |
+| Estilos | Tailwind CSS + Shadcn/UI |
+| Ruteo | React Router DOM |
+| UI Icons | Lucide React |
+| Notificaciones | Sonner |
+| API | fetchWithAuth (custom helper con JWT) |
 
-**Use Lovable**
+---
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/f79367b0-981b-4f8d-a1b0-ab2545e89fb4) and start prompting.
+## ⚙️ Instalación y ejecución
 
-Changes made via Lovable will be committed automatically to this repo.
+### 1️⃣ Clonar el repositorio
 
-**Use your preferred IDE**
+```bash
+git clone https://github.com/tuusuario/kibernum-academix.git
+cd kibernum-academix
+````
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### 2️⃣ Instalar dependencias
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+```bash
+npm install
+```
 
-Follow these steps:
+### 3️⃣ Configurar variables de entorno
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+Crear un archivo `.env` en la raíz del proyecto:
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+```bash
+VITE_API_URL=http://localhost:8080/api
+```
 
-# Step 3: Install the necessary dependencies.
-npm i
+### 4️⃣ Iniciar el entorno de desarrollo
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+```bash
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+Accede a:
+👉 [http://localhost:5173](http://localhost:5173)
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+---
 
-**Use GitHub Codespaces**
+## 🧠 Estructura del proyecto
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+```
+src/
+├── components/
+│   ├── ui/                # Componentes base (Button, Card, Input, etc.)
+│   ├── Header.tsx
+│   ├── Footer.tsx
+│   └── NavLink.tsx
+│
+├── context/
+│   ├── AuthContext.tsx    # Manejo global de autenticación
+│   └── PrivateRoute.tsx   # Protege rutas según rol
+│
+├── lib/
+│   ├── api.js             # Helper fetchWithAuth (JWT + Fetch)
+│   └── utils.ts           # Funciones auxiliares
+│
+├── pages/
+│   ├── Home.tsx
+│   ├── Cursos.tsx
+│   ├── Acerca.tsx
+│   ├── LoginAlumno.tsx
+│   ├── LoginStaff.tsx
+│   ├── DashboardAlumno.tsx
+│   ├── DashboardStaff.tsx
+│   └── NotFound.tsx
+│
+├── App.tsx                # Configuración de rutas principales
+├── main.tsx               # Punto de entrada
+└── index.css              # Estilos globales
+```
 
-## What technologies are used for this project?
+---
 
-This project is built with:
+## 🔐 Autenticación y Roles
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+El sistema usa **JWT** emitido por el backend.
+Al iniciar sesión, el token y los datos del usuario se guardan en `localStorage`.
 
-## How can I deploy this project?
+### Ejemplo de login
 
-Simply open [Lovable](https://lovable.dev/projects/f79367b0-981b-4f8d-a1b0-ab2545e89fb4) and click on Share -> Publish.
+```ts
+if (data.user.rol === 1) navigate("/dashboard-admin");
+else if (data.user.rol === 2) navigate("/dashboard-staff");
+else navigate("/dashboard-alumno");
+```
 
-## Can I connect a custom domain to my Lovable project?
+### Contexto de autenticación (`AuthContext.tsx`)
 
-Yes, you can!
+Provee acceso global a `user` y `token`.
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+```tsx
+<AuthProvider>
+  <App />
+</AuthProvider>
+```
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+### Rutas protegidas (`PrivateRoute.tsx`)
+
+```tsx
+if (!token) return <Navigate to="/" replace />;
+if (roles && !roles.includes(user?.rol)) return <Navigate to="/unauthorized" replace />;
+```
+
+---
+
+## 🌐 Conexión con el Backend
+
+Archivo: `src/lib/api.js`
+
+```js
+export const fetchWithAuth = async (endpoint, options = {}) => {
+  const token = localStorage.getItem("token");
+  const res = await fetch(`${import.meta.env.VITE_API_URL}${endpoint}`, {
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  if (!res.ok) throw new Error("Error al conectar con el servidor");
+  return res.json();
+};
+```
+
+---
+
+## 📊 Dashboard Staff
+
+El **panel administrativo** permite:
+
+✅ Ver y buscar alumnos.
+✅ Registrar asistencias (con fecha, estado, observación).
+✅ Registrar calificaciones por módulo.
+✅ Exportar reportes en CSV o PDF.
+
+### Ejemplo de registro de asistencia:
+
+```js
+await fetchWithAuth("/asistencias", {
+  method: "POST",
+  body: JSON.stringify({
+    id_alumno,
+    id_staff: user.id,
+    fecha: new Date().toISOString().split("T")[0],
+    presente: true,
+    observacion: "Programación Web"
+  }),
+});
+```
+
+### Ejemplo de registro de notas:
+
+```js
+await fetchWithAuth("/notas", {
+  method: "POST",
+  body: JSON.stringify({
+    id_alumno,
+    id_staff: user.id,
+    modulo: "Base de Datos",
+    nota: 6.5,
+    comentario: "Excelente entrega final"
+  }),
+});
+```
+
+---
+
+## 💡 Componentes destacados
+
+| Componente           | Función                                |
+| -------------------- | -------------------------------------- |
+| `Header.tsx`         | Menú principal con navegación reactiva |
+| `Footer.tsx`         | Pie informativo con contacto           |
+| `DashboardStaff.tsx` | Panel de gestión académico             |
+| `AuthContext.tsx`    | Manejo global de usuario y sesión      |
+| `PrivateRoute.tsx`   | Protección de rutas según rol          |
+
+---
+
+## 🎨 Estilo visual
+
+* **Tailwind CSS**: Diseño responsive y minimalista.
+* **Shadcn/UI**: Tarjetas, botones y pestañas modernas.
+* **Lucide React**: Íconos SVG elegantes y accesibles.
+* **Sonner**: Notificaciones flotantes tipo “toast”.
+
+---
+
+## 🧾 Scripts disponibles
+
+| Comando           | Descripción                           |
+| ----------------- | ------------------------------------- |
+| `npm run dev`     | Inicia el servidor de desarrollo      |
+| `npm run build`   | Compila la aplicación para producción |
+| `npm run preview` | Previsualiza el build generado        |
+
+---
+
+## 🚀 Estado actual
+
+✅ Login funcional (alumno/staff)
+✅ Conexión API segura con JWT
+✅ Dashboard Staff con gestión visual
+⚙️ En desarrollo:
+
+* Mejorar persistencia visual tras registrar asistencia/notas
+* Integrar reportes dinámicos por módulo y alumno
+
+---
+
+## 👨‍💻 Autor
+
+**Abdón Sandoval**
+Proyecto académico – Kibernum Academy
+📧 [abdon.sandoval@kibernum.com](mailto:abdon.sandoval@kibernum.com)
+
+---
+
+> 💬 Proyecto en desarrollo continuo — Integración directa con el backend del Portal Académico.
+
+```
+
+---
+
